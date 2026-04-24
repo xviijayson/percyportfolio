@@ -1,0 +1,1313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Percy Denolo Admin Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Sans:wght@400;500;600&family=Playfair+Display:wght@600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#090d12;
+      --bg-2:#111822;
+      --panel:rgba(17,24,34,0.78);
+      --panel-2:rgba(11,17,25,0.82);
+      --line:rgba(157,196,255,0.15);
+      --line-strong:rgba(157,196,255,0.32);
+      --text:#f4f7fb;
+      --muted:rgba(244,247,251,0.65);
+      --accent:#ff9a3c;
+      --accent-2:#6ecbff;
+      --good:#74e0a2;
+      --warn:#ffcc66;
+      --danger:#ff7a7a;
+      --shadow:0 24px 60px rgba(0,0,0,0.38);
+      --radius:24px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      color:var(--text);
+      font-family:"IBM Plex Sans",sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(255,154,60,0.16), transparent 24%),
+        radial-gradient(circle at 85% 15%, rgba(110,203,255,0.18), transparent 28%),
+        radial-gradient(circle at 50% 120%, rgba(89,58,255,0.12), transparent 34%),
+        linear-gradient(180deg, #081019 0%, #0d131d 46%, #090d12 100%);
+      min-height:100vh;
+      overflow-x:hidden;
+    }
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size:34px 34px;
+      mask-image:linear-gradient(180deg, rgba(0,0,0,0.7), transparent 88%);
+    }
+    button,input,textarea,select{font:inherit}
+    button{
+      border:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+      color:var(--text);
+      padding:12px 16px;
+      border-radius:14px;
+      cursor:pointer;
+      transition:transform .18s ease,border-color .18s ease,background .18s ease,box-shadow .18s ease;
+    }
+    button:hover{
+      transform:translateY(-1px);
+      border-color:var(--line-strong);
+      box-shadow:0 10px 24px rgba(0,0,0,0.18);
+    }
+    button.primary{
+      background:linear-gradient(135deg, var(--accent), #ff6b4a);
+      color:#111;
+      border-color:transparent;
+      font-weight:700;
+    }
+    button.ghost{
+      background:transparent;
+    }
+    .shell{
+      width:min(1500px, calc(100vw - 28px));
+      margin:18px auto;
+      display:grid;
+      grid-template-columns:280px minmax(0, 1fr);
+      gap:18px;
+    }
+    .sidebar,
+    .panel,
+    .hero-card{
+      border:1px solid var(--line);
+      background:var(--panel);
+      backdrop-filter:blur(18px);
+      box-shadow:var(--shadow);
+    }
+    .sidebar{
+      position:sticky;
+      top:18px;
+      align-self:start;
+      padding:22px;
+      border-radius:28px;
+    }
+    .brand-kicker{
+      color:var(--accent-2);
+      font-size:12px;
+      letter-spacing:.32em;
+      text-transform:uppercase;
+      margin-bottom:10px;
+    }
+    .brand-title{
+      margin:0;
+      font-family:"Playfair Display",serif;
+      font-size:34px;
+      line-height:1;
+    }
+    .brand-copy{
+      margin:12px 0 18px;
+      color:var(--muted);
+      line-height:1.65;
+      font-size:14px;
+    }
+    .nav{
+      display:grid;
+      gap:10px;
+      margin:18px 0 24px;
+    }
+    .nav button{
+      width:100%;
+      text-align:left;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      border-radius:16px;
+      padding:14px 16px;
+    }
+    .nav button.active{
+      border-color:rgba(255,154,60,0.48);
+      background:linear-gradient(135deg, rgba(255,154,60,0.18), rgba(110,203,255,0.08));
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      background:rgba(255,255,255,0.06);
+      color:var(--muted);
+      font-size:12px;
+    }
+    .dot{
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      background:var(--good);
+      box-shadow:0 0 18px rgba(116,224,162,0.8);
+    }
+    .sidebar-actions{
+      display:grid;
+      gap:10px;
+    }
+    .main{
+      display:grid;
+      gap:18px;
+      min-width:0;
+    }
+    .hero-card{
+      border-radius:30px;
+      padding:26px;
+      position:relative;
+      overflow:hidden;
+      background:
+        radial-gradient(circle at right top, rgba(255,154,60,0.18), transparent 24%),
+        radial-gradient(circle at left bottom, rgba(110,203,255,0.14), transparent 28%),
+        var(--panel);
+    }
+    .hero-card::after{
+      content:"STUDIO";
+      position:absolute;
+      right:20px;
+      bottom:-14px;
+      font-family:"Bebas Neue",sans-serif;
+      font-size:120px;
+      line-height:1;
+      color:rgba(255,255,255,0.03);
+      letter-spacing:.08em;
+    }
+    .hero-top{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:18px;
+    }
+    .hero-top h1{
+      margin:0;
+      font-family:"Playfair Display",serif;
+      font-size:clamp(32px, 5vw, 54px);
+      line-height:.96;
+      max-width:700px;
+    }
+    .hero-top p{
+      margin:14px 0 0;
+      color:var(--muted);
+      max-width:720px;
+      line-height:1.7;
+    }
+    .action-row{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px;
+      justify-content:flex-end;
+    }
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(4, minmax(0, 1fr));
+      gap:14px;
+      margin-top:24px;
+    }
+    .stat{
+      border:1px solid var(--line);
+      border-radius:20px;
+      padding:18px;
+      background:rgba(255,255,255,0.035);
+    }
+    .stat-label{
+      color:var(--muted);
+      font-size:12px;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+    }
+    .stat-value{
+      margin-top:10px;
+      font-size:34px;
+      font-weight:700;
+      line-height:1;
+    }
+    .workspace{
+      display:grid;
+      gap:18px;
+    }
+    .panel{
+      border-radius:26px;
+      padding:22px;
+    }
+    .panel[hidden]{display:none}
+    .panel-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:18px;
+      margin-bottom:18px;
+    }
+    .panel-head h2{
+      margin:0;
+      font-family:"Playfair Display",serif;
+      font-size:28px;
+    }
+    .panel-head p{
+      margin:8px 0 0;
+      color:var(--muted);
+      line-height:1.6;
+      max-width:680px;
+    }
+    .toolbar{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .search-wrap{
+      display:grid;
+      grid-template-columns:1.2fr .8fr;
+      gap:14px;
+      margin-bottom:18px;
+    }
+    .field,
+    .select-wrap,
+    .toggle,
+    .upload-box,
+    .preset,
+    .preview-card,
+    .theme-card{
+      border:1px solid var(--line);
+      background:var(--panel-2);
+      border-radius:20px;
+    }
+    .field{
+      padding:16px;
+    }
+    .field-head{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:flex-start;
+      margin-bottom:10px;
+    }
+    .field-head strong{
+      display:block;
+      font-size:15px;
+    }
+    .field-meta{
+      color:var(--muted);
+      font-size:12px;
+      margin-top:4px;
+    }
+    .field-actions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    input[type="text"],
+    input[type="search"],
+    input[type="color"],
+    textarea,
+    select{
+      width:100%;
+      border:1px solid rgba(255,255,255,0.08);
+      background:rgba(255,255,255,0.03);
+      color:var(--text);
+      border-radius:14px;
+      padding:12px 14px;
+      outline:none;
+    }
+    textarea{
+      min-height:126px;
+      resize:vertical;
+      line-height:1.6;
+    }
+    .counter{
+      margin-top:10px;
+      color:var(--muted);
+      font-size:12px;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .grid{
+      display:grid;
+      gap:14px;
+    }
+    .media-grid{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:14px;
+    }
+    .media-card{
+      display:grid;
+      grid-template-columns:150px minmax(0,1fr);
+      gap:14px;
+      padding:14px;
+      border:1px solid var(--line);
+      background:var(--panel-2);
+      border-radius:20px;
+    }
+    .media-card img{
+      width:100%;
+      height:120px;
+      object-fit:cover;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,0.08);
+      background:#06090e;
+    }
+    .media-meta h3{
+      margin:0 0 6px;
+      font-size:16px;
+    }
+    .media-meta p{
+      margin:0 0 12px;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.5;
+      word-break:break-word;
+    }
+    .media-actions{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+    }
+    .media-actions input{display:none}
+    .file-button{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:44px;
+      padding:10px 14px;
+      border-radius:14px;
+      border:1px dashed var(--line-strong);
+      cursor:pointer;
+      background:rgba(255,255,255,0.03);
+    }
+    .toggle{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:14px 16px;
+    }
+    .toggle small{
+      display:block;
+      color:var(--muted);
+      margin-top:4px;
+      line-height:1.5;
+    }
+    .toggle input{
+      width:20px;
+      height:20px;
+      accent-color:var(--accent);
+    }
+    .presets{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0, 1fr));
+      gap:14px;
+    }
+    .preset{
+      padding:18px;
+    }
+    .preset h3{
+      margin:0 0 8px;
+      font-size:18px;
+    }
+    .preset p{
+      margin:0 0 14px;
+      color:var(--muted);
+      line-height:1.6;
+      font-size:14px;
+    }
+    .theme-grid{
+      display:grid;
+      grid-template-columns:1.2fr .8fr;
+      gap:14px;
+    }
+    .theme-card{
+      padding:18px;
+    }
+    .theme-card h3{
+      margin:0 0 14px;
+      font-size:18px;
+    }
+    .color-row{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0, 1fr));
+      gap:12px;
+    }
+    .swatch{
+      display:grid;
+      gap:8px;
+    }
+    .swatch label{
+      color:var(--muted);
+      font-size:12px;
+      text-transform:uppercase;
+      letter-spacing:.18em;
+    }
+    .status-bar{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      align-items:center;
+      padding-top:10px;
+      color:var(--muted);
+      font-size:13px;
+    }
+    .status-message{
+      color:var(--accent);
+      min-height:20px;
+    }
+    .preview-layout{
+      display:grid;
+      grid-template-columns:320px minmax(0,1fr);
+      gap:14px;
+    }
+    .preview-card{
+      padding:18px;
+    }
+    iframe{
+      width:100%;
+      min-height:860px;
+      border:0;
+      border-radius:22px;
+      background:#05070b;
+    }
+    .tiny{
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.6;
+    }
+    .compact-list{
+      display:grid;
+      gap:10px;
+    }
+    .compact-list div{
+      padding:12px 14px;
+      border-radius:16px;
+      background:rgba(255,255,255,0.035);
+      border:1px solid rgba(255,255,255,0.06);
+    }
+    .hidden-item{display:none !important}
+    @media (max-width: 1180px){
+      .shell{grid-template-columns:1fr}
+      .sidebar{position:static}
+      .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .search-wrap,
+      .theme-grid,
+      .preview-layout{grid-template-columns:1fr}
+      .media-grid{grid-template-columns:1fr}
+    }
+    @media (max-width: 740px){
+      .hero-top,
+      .panel-head{flex-direction:column}
+      .stats,
+      .presets,
+      .color-row{grid-template-columns:1fr}
+      .media-card{grid-template-columns:1fr}
+      .action-row{justify-content:flex-start}
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand-kicker">Creative Control</div>
+      <h1 class="brand-title">Admin Studio</h1>
+      <p class="brand-copy">Edit content, reshape the site mood, manage images, and test changes in a live preview without touching the layout code.</p>
+      <div class="pill"><span class="dot"></span><span id="autosaveLabel">Manual save mode</span></div>
+
+      <div class="nav">
+        <button class="nav-btn active" data-panel="dashboard"><span>Dashboard</span><span>01</span></button>
+        <button class="nav-btn" data-panel="content"><span>Content Studio</span><span>02</span></button>
+        <button class="nav-btn" data-panel="media"><span>Media Vault</span><span>03</span></button>
+        <button class="nav-btn" data-panel="theme"><span>Visual Theme</span><span>04</span></button>
+        <button class="nav-btn" data-panel="preview"><span>Preview Lab</span><span>05</span></button>
+      </div>
+
+      <div class="sidebar-actions">
+        <button class="primary" id="saveBtn" type="button">Save Changes</button>
+        <button id="openSiteBtn" type="button">Open Website</button>
+        <button id="exportBtn" type="button">Export Settings</button>
+        <label class="file-button" for="importInput">Import Settings</label>
+        <input id="importInput" type="file" accept="application/json">
+        <button class="ghost" id="resetBtn" type="button">Reset Everything</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <section class="hero-card">
+        <div class="hero-top">
+          <div>
+            <div class="brand-kicker">Percy Denolo Website</div>
+            <h1>Build a stronger admin, not just a longer form.</h1>
+            <p>This version adds searchable content editing, quick presets, theme controls, import and export, dashboard stats, live preview, and workflow toggles so the admin feels like a studio instead of a storage closet.</p>
+          </div>
+          <div class="action-row">
+            <button id="refreshPreviewBtn" type="button">Refresh Preview</button>
+            <button id="focusPreviewBtn" type="button">Jump to Preview</button>
+            <button id="applyPresetThemeBtn" type="button">Apply Noir Gold Theme</button>
+          </div>
+        </div>
+        <div class="stats">
+          <div class="stat">
+            <div class="stat-label">Text Blocks</div>
+            <div class="stat-value" id="statTextBlocks">0</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Text Overrides</div>
+            <div class="stat-value" id="statTextOverrides">0</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Custom Images</div>
+            <div class="stat-value" id="statCustomImages">0</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Hidden Images</div>
+            <div class="stat-value" id="statHiddenImages">0</div>
+          </div>
+        </div>
+      </section>
+
+      <div class="workspace">
+        <section class="panel" id="panel-dashboard">
+          <div class="panel-head">
+            <div>
+              <h2>Dashboard</h2>
+              <p>Quick actions for faster changes. Use presets to rewrite key sections instantly, then fine-tune them in the content editor.</p>
+            </div>
+            <div class="toolbar">
+              <div class="toggle">
+                <div>
+                  <strong>Autosave</strong>
+                  <small>Save on every change instead of using the manual save button.</small>
+                </div>
+                <input id="autosaveToggle" type="checkbox">
+              </div>
+            </div>
+          </div>
+
+          <div class="presets">
+            <div class="preset">
+              <h3>Performance Pitch</h3>
+              <p>Sharper hero copy and contact call-to-action for events, brand showcases, and live bookings.</p>
+              <button type="button" data-preset="performance">Use Preset</button>
+            </div>
+            <div class="preset">
+              <h3>Gallery Focus</h3>
+              <p>More refined editorial tone for exhibitions, artist profile pages, and visual storytelling.</p>
+              <button type="button" data-preset="gallery">Use Preset</button>
+            </div>
+            <div class="preset">
+              <h3>Bold Promo</h3>
+              <p>Punchier wording built for attention, stronger bookings language, and a more commercial feel.</p>
+              <button type="button" data-preset="promo">Use Preset</button>
+            </div>
+          </div>
+
+          <div class="grid" style="margin-top:18px;grid-template-columns:1fr 1fr;">
+            <div class="preview-card">
+              <h3 style="margin-top:0">What Changed</h3>
+              <div class="compact-list" id="changeFeed">
+                <div>No saved changes yet.</div>
+              </div>
+            </div>
+            <div class="preview-card">
+              <h3 style="margin-top:0">Workflow Notes</h3>
+              <div class="compact-list">
+                <div>Export a backup before major edits.</div>
+                <div>Use theme controls to shift the mood without rewriting the site CSS.</div>
+                <div>Refresh the preview after importing or resetting data.</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel" id="panel-content" hidden>
+          <div class="panel-head">
+            <div>
+              <h2>Content Studio</h2>
+              <p>Search fields, edit copy, restore defaults, and keep track of content length while you write.</p>
+            </div>
+          </div>
+          <div class="search-wrap">
+            <input id="contentSearch" type="search" placeholder="Search fields like hero, quote, contact, footer...">
+            <select id="contentFilter">
+              <option value="all">Show all content</option>
+              <option value="custom">Only customized</option>
+              <option value="default">Only defaults</option>
+            </select>
+          </div>
+          <div class="grid" id="textFields"></div>
+        </section>
+
+        <section class="panel" id="panel-media" hidden>
+          <div class="panel-head">
+            <div>
+              <h2>Media Vault</h2>
+              <p>Replace visuals, hide sections, and quickly scan which images are still defaults.</p>
+            </div>
+          </div>
+          <div class="search-wrap">
+            <input id="mediaSearch" type="search" placeholder="Search image labels like hero, gallery, stage...">
+            <select id="mediaFilter">
+              <option value="all">Show all images</option>
+              <option value="custom">Only custom images</option>
+              <option value="hidden">Only hidden images</option>
+              <option value="default">Only default images</option>
+            </select>
+          </div>
+          <div class="media-grid" id="imageFields"></div>
+          <p class="tiny">Image replacements are stored in your browser on this machine. If you want a portable backup, export your settings JSON.</p>
+        </section>
+
+        <section class="panel" id="panel-theme" hidden>
+          <div class="panel-head">
+            <div>
+              <h2>Visual Theme</h2>
+              <p>Change accent, background, and display behavior for the main site. These settings are applied by the website script through the same admin storage.</p>
+            </div>
+          </div>
+          <div class="theme-grid">
+            <div class="theme-card">
+              <h3>Palette</h3>
+              <div class="select-wrap" style="padding:0;border:0;background:none">
+                <select id="themePreset">
+                  <option value="noir-gold">Noir Gold</option>
+                  <option value="ember-stage">Ember Stage</option>
+                  <option value="museum-blue">Museum Blue</option>
+                </select>
+              </div>
+              <div class="color-row" style="margin-top:14px">
+                <div class="swatch">
+                  <label for="colorGold">Accent</label>
+                  <input id="colorGold" type="color">
+                </div>
+                <div class="swatch">
+                  <label for="colorDark">Background</label>
+                  <input id="colorDark" type="color">
+                </div>
+                <div class="swatch">
+                  <label for="colorCream">Text</label>
+                  <input id="colorCream" type="color">
+                </div>
+              </div>
+              <div class="toolbar" style="margin-top:14px">
+                <button id="applyThemePresetBtn" type="button">Apply Selected Palette</button>
+                <button id="restoreThemeBtn" type="button">Restore Site Defaults</button>
+              </div>
+            </div>
+
+            <div class="theme-card">
+              <h3>Display Controls</h3>
+              <div class="grid">
+                <label class="toggle">
+                  <div>
+                    <strong>Reduce motion</strong>
+                    <small>Turns off most animations and transitions on the site.</small>
+                  </div>
+                  <input id="reduceMotion" type="checkbox">
+                </label>
+                <label class="toggle">
+                  <div>
+                    <strong>Hide particles</strong>
+                    <small>Disables the floating particle layer for a cleaner presentation.</small>
+                  </div>
+                  <input id="hideParticles" type="checkbox">
+                </label>
+                <label class="toggle">
+                  <div>
+                    <strong>Show normal cursor</strong>
+                    <small>Turns off the custom cursor effect on the website.</small>
+                  </div>
+                  <input id="hideCursor" type="checkbox">
+                </label>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel" id="panel-preview" hidden>
+          <div class="panel-head">
+            <div>
+              <h2>Preview Lab</h2>
+              <p>Live iframe preview for the main website. Save or autosave, then refresh this panel to inspect the result.</p>
+            </div>
+            <div class="toolbar">
+              <button id="reloadFrameBtn" type="button">Reload Frame</button>
+            </div>
+          </div>
+          <div class="preview-layout">
+            <div class="preview-card">
+              <h3 style="margin-top:0">Preview Checklist</h3>
+              <div class="compact-list">
+                <div>Check hero text spacing after long titles.</div>
+                <div>Verify hidden images do not leave awkward empty gaps.</div>
+                <div>Test the selected palette against both light and dark photos.</div>
+                <div>Export the JSON once the preview looks right.</div>
+              </div>
+            </div>
+            <div class="preview-card">
+              <iframe id="sitePreview" src="percy_denolo_v3.html" title="Percy Denolo website preview"></iframe>
+            </div>
+          </div>
+        </section>
+
+        <div class="status-bar">
+          <div class="status-message" id="statusText"></div>
+          <div>Storage key: <code>percyAdminData</code></div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const STORAGE_KEY = 'percyAdminData';
+    const UI_STORAGE_KEY = 'percyAdminUiPrefs';
+
+    const textConfig = [
+      { key: 'hero-sub', label: 'Hero Subtitle', type: 'text', defaultValue: "Asia's First Mud Shadow Artist &nbsp;·&nbsp; Est. 1973" },
+      { key: 'hero-desc', label: 'Hero Description', type: 'textarea', defaultValue: "Where sacred earth becomes breathtaking art — a Filipino master who paints with mud before your eyes." },
+      { key: 'about-label', label: 'About Label', type: 'text', defaultValue: 'All About Me' },
+      { key: 'about-title', label: 'About Title', type: 'text', defaultValue: 'The Artist Behind<br><em>the Mud</em>' },
+      { key: 'about-body', label: 'About Body (HTML allowed)', type: 'textarea', defaultValue: `<p><strong>Percival (Percy) Denolo</strong> was born on <strong>January 24, 1973</strong> in <strong>Pres. Roxas, Capiz</strong>. Known as <strong>"Onyok"</strong> in Valenzuela City, where he now resides, he is married to <strong>Rosemarie Rodrigo Denolo</strong> and blessed with two children: <strong>Chrosper Mark</strong> and <strong>Clark Cyrhoss</strong>.</p>
+<p>His parents discovered his artistic side when he was only <strong>four years old</strong>, after seeing him constantly draw anything he could find in their backyard. That early instinct grew into a lifelong devotion to making images, stories, and performances with his hands.</p>
+<p>He studied <strong>Bachelor of Science in Education, Major in Industrial Arts</strong> at the <strong>Technological University of the Philippines</strong>. He later worked for <strong>16 years at Rebisco Company</strong>, before being given the opportunity to become a <strong>comics and editorial artist at People's Balita</strong> through the late <strong>Carlo J. Caparas</strong>.</p>
+<p>Percy can work with <strong>charcoal, pencil, pen and ink, watercolor, acrylic, and oil paints</strong>. From paper to walls, he can paint on almost anything. But it was his mastery of <strong>mud shadow art</strong> that made him widely known. His discovery of using a <strong>termite colony</strong> as a source of mud deepened both his creativity and his connection to the medium, whose texture and natural character became part of his signature.</p>
+<p>In <strong>2016</strong>, he appeared on <strong>Pilipinas Got Talent Season 5</strong>. Given only <strong>1.5 minutes</strong> in the audition, he chose an unconventional performance style: creating mud shadow art on glass using his bare hands. The judges were stunned, the performance became a hit, and Percy was remembered as the <strong>first Filipino mud shadow artist and performer</strong>.</p>
+<p>Over time, he also developed his techniques for <strong>mud on canvas</strong>, producing works that are both expressive and lasting. Through performances, exhibits, and recognitions, he has continued to grow as a versatile artist whose work bridges live performance, fine art, and cultural storytelling.</p>` },
+      { key: 'quote-text', label: 'Quote Text', type: 'textarea', defaultValue: `Imagination is the beginning of creation.<br>
+<em>You imagine what you desire,</em><br>
+you will what you imagine, and at last —<br>
+you create what you will.` },
+      { key: 'quote-attr', label: 'Quote Attribution', type: 'text', defaultValue: '— George Bernard Shaw' },
+      { key: 'mudart-title', label: 'Mud Art Title', type: 'text', defaultValue: 'About<br><span>Mud Art</span>' },
+      { key: 'mudart-body', label: 'Mud Art Body (HTML allowed)', type: 'textarea', defaultValue: '' },
+      { key: 'collab-title', label: 'Collaborations Title', type: 'text', defaultValue: 'Selected <em>Collaborations</em>' },
+      { key: 'contact-label', label: 'Contact Section Label', type: 'text', defaultValue: 'Commission · Perform · Collaborate' },
+      { key: 'contact-title', label: 'Contact Title', type: 'text', defaultValue: "LET'S<br><em>CREATE</em>" },
+      { key: 'contact-cta', label: 'Contact Button Text', type: 'text', defaultValue: 'Commission a Work of Art' },
+      { key: 'footer-brand', label: 'Footer Brand Line', type: 'text', defaultValue: "Percival S. Denolo Jr. · Asia's First Mud Shadow Artist" }
+    ];
+
+    const imageConfig = [
+      { key: 'hero-image', label: 'Hero Image', defaultSrc: '16.jpg' },
+      { key: 'about-image', label: 'About Image', defaultSrc: '14.jpg' },
+      { key: 'award-image', label: 'Awards Image', defaultSrc: '13.jpg' },
+      { key: 'mudart-1', label: 'Mud Art 1', defaultSrc: 'md 1.jpg' },
+      { key: 'mudart-2', label: 'Mud Art 2', defaultSrc: 'md 2.jpg' },
+      { key: 'mudart-3', label: 'Mud Art 3', defaultSrc: 'mud 3.jpg' },
+      { key: 'gallery-1', label: 'Gallery 1', defaultSrc: '1.jpg' },
+      { key: 'gallery-2', label: 'Gallery 2', defaultSrc: '2.jpg' },
+      { key: 'gallery-3', label: 'Gallery 3', defaultSrc: '3.jpg' },
+      { key: 'gallery-4', label: 'Gallery 4', defaultSrc: '6.jpg' },
+      { key: 'gallery-5', label: 'Gallery 5', defaultSrc: '7.jpg' },
+      { key: 'gallery-6', label: 'Gallery 6', defaultSrc: '8.jpg' },
+      { key: 'gallery-7', label: 'Gallery 7', defaultSrc: '9.jpg' },
+      { key: 'gallery-8', label: 'Gallery 8', defaultSrc: '15.jpg' },
+      { key: 'gallery-9', label: 'Gallery 9', defaultSrc: '14.jpg' },
+      { key: 'stage-1', label: 'Stage 1', defaultSrc: 'pilipinas got talent.jpg' },
+      { key: 'stage-2', label: 'Stage 2', defaultSrc: 'mud art show.jpg' },
+      { key: 'stage-3', label: 'Stage 3', defaultSrc: '12.jpg' }
+    ];
+
+    const themePresets = {
+      'noir-gold': { gold: '#c8973a', dark: '#0c0904', cream: '#f2ead8' },
+      'ember-stage': { gold: '#ff7a3c', dark: '#1a0d08', cream: '#ffe6d2' },
+      'museum-blue': { gold: '#78c8ff', dark: '#07121d', cream: '#eff8ff' }
+    };
+
+    const presetBundles = {
+      performance: {
+        texts: {
+          'hero-sub': "Live Mud Shadow Performance · Filipino Visual Storytelling",
+          'hero-desc': 'A stage-ready visual act where raw earth, light, and speed become unforgettable portraits in real time.',
+          'contact-title': "BOOK A<br><em>SHOW</em>",
+          'contact-cta': 'Book Percy for a Live Performance'
+        }
+      },
+      gallery: {
+        texts: {
+          'hero-sub': "Mud, Memory, Craft · Percival S. Denolo Jr.",
+          'hero-desc': 'An artist profile shaped by live performance, portraiture, and an earth-based medium turned into fine visual language.',
+          'about-label': 'Artist Profile',
+          'collab-title': 'Exhibits <em>& Collaborations</em>'
+        }
+      },
+      promo: {
+        texts: {
+          'hero-sub': "The Original Mud Shadow Artist · Bookings Open",
+          'hero-desc': 'Dramatic, handmade, and impossible to ignore — Percy Denolo turns mud into performance art with instant emotional impact.',
+          'contact-title': "LET'S<br><em>WORK</em>",
+          'contact-cta': 'Start a Project'
+        }
+      }
+    };
+
+    const defaultThemeSettings = {
+      preset: 'noir-gold',
+      gold: '#c8973a',
+      dark: '#0c0904',
+      cream: '#f2ead8',
+      reduceMotion: false,
+      hideParticles: false,
+      hideCursor: false
+    };
+
+    const getData = () => {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{"texts":{},"images":{},"site":{}}');
+        return {
+          texts: parsed.texts || {},
+          images: parsed.images || {},
+          site: { ...defaultThemeSettings, ...(parsed.site || {}) }
+        };
+      } catch (err) {
+        return { texts: {}, images: {}, site: { ...defaultThemeSettings } };
+      }
+    };
+
+    const saveData = (payload) => {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    };
+
+    const getUiPrefs = () => {
+      try {
+        return JSON.parse(localStorage.getItem(UI_STORAGE_KEY) || '{"autosave":false}');
+      } catch (err) {
+        return { autosave: false };
+      }
+    };
+
+    const saveUiPrefs = (prefs) => {
+      localStorage.setItem(UI_STORAGE_KEY, JSON.stringify(prefs));
+    };
+
+    let data = getData();
+    let uiPrefs = getUiPrefs();
+    const imageState = JSON.parse(JSON.stringify(data.images || {}));
+    const statusText = document.getElementById('statusText');
+    const changeFeed = document.getElementById('changeFeed');
+    const textFields = document.getElementById('textFields');
+    const imageFields = document.getElementById('imageFields');
+    const sitePreview = document.getElementById('sitePreview');
+    const autosaveToggle = document.getElementById('autosaveToggle');
+    const autosaveLabel = document.getElementById('autosaveLabel');
+
+    const setStatus = (message) => {
+      statusText.textContent = message;
+    };
+
+    const buildPayload = () => {
+      const next = { texts: {}, images: {}, site: {} };
+
+      textConfig.forEach((item) => {
+        const input = document.getElementById(item.key);
+        if (!input) return;
+        const value = input.value;
+        if (value.trim() && value !== item.defaultValue) {
+          next.texts[item.key] = value;
+        }
+      });
+
+      imageConfig.forEach((item) => {
+        const state = imageState[item.key];
+        if (!state) return;
+        if (state.src || state.deleted) next.images[item.key] = state;
+      });
+
+      const siteSettings = {
+        preset: document.getElementById('themePreset').value,
+        gold: document.getElementById('colorGold').value,
+        dark: document.getElementById('colorDark').value,
+        cream: document.getElementById('colorCream').value,
+        reduceMotion: document.getElementById('reduceMotion').checked,
+        hideParticles: document.getElementById('hideParticles').checked,
+        hideCursor: document.getElementById('hideCursor').checked
+      };
+
+      const defaultSiteJson = JSON.stringify(defaultThemeSettings);
+      if (JSON.stringify(siteSettings) !== defaultSiteJson) {
+        next.site = siteSettings;
+      }
+
+      return next;
+    };
+
+    const saveAll = (message = 'Changes saved.') => {
+      const payload = buildPayload();
+      saveData(payload);
+      data = getData();
+      updateStats();
+      updateChangeFeed(payload);
+      setStatus(message);
+    };
+
+    const maybeAutosave = (message = 'Autosaved.') => {
+      if (!autosaveToggle.checked) return;
+      saveAll(message);
+    };
+
+    const updateStats = () => {
+      const payload = buildPayload();
+      const textOverrideCount = Object.keys(payload.texts || {}).length;
+      const customImages = Object.values(payload.images || {}).filter((item) => item.src).length;
+      const hiddenImages = Object.values(payload.images || {}).filter((item) => item.deleted).length;
+
+      document.getElementById('statTextBlocks').textContent = String(textConfig.length);
+      document.getElementById('statTextOverrides').textContent = String(textOverrideCount);
+      document.getElementById('statCustomImages').textContent = String(customImages);
+      document.getElementById('statHiddenImages').textContent = String(hiddenImages);
+    };
+
+    const updateChangeFeed = (payload = buildPayload()) => {
+      const items = [];
+      const textCount = Object.keys(payload.texts || {}).length;
+      const imageCount = Object.values(payload.images || {}).filter((item) => item.src).length;
+      const hiddenCount = Object.values(payload.images || {}).filter((item) => item.deleted).length;
+      const themeChanged = Object.keys(payload.site || {}).length > 0;
+
+      if (textCount) items.push(`${textCount} text block${textCount === 1 ? '' : 's'} customized`);
+      if (imageCount) items.push(`${imageCount} image${imageCount === 1 ? '' : 's'} replaced`);
+      if (hiddenCount) items.push(`${hiddenCount} image${hiddenCount === 1 ? '' : 's'} hidden`);
+      if (themeChanged) items.push('visual theme settings adjusted');
+      if (!items.length) items.push('No saved changes yet.');
+
+      changeFeed.innerHTML = items.map((item) => `<div>${item}</div>`).join('');
+    };
+
+    const renderTextFields = () => {
+      textConfig.forEach((item) => {
+        const wrap = document.createElement('div');
+        wrap.className = 'field text-item';
+        wrap.dataset.key = item.key;
+        wrap.dataset.label = item.label.toLowerCase();
+
+        const value = typeof data.texts[item.key] === 'string' ? data.texts[item.key] : item.defaultValue;
+
+        wrap.innerHTML = `
+          <div class="field-head">
+            <div>
+              <strong>${item.label}</strong>
+              <div class="field-meta">${item.key}</div>
+            </div>
+            <div class="field-actions">
+              <button type="button" data-restore-text="${item.key}">Restore Default</button>
+            </div>
+          </div>
+        `;
+
+        const input = document.createElement(item.type === 'textarea' ? 'textarea' : 'input');
+        input.id = item.key;
+        if (item.type !== 'textarea') input.type = 'text';
+        input.value = value;
+
+        const counter = document.createElement('div');
+        counter.className = 'counter';
+        const syncCounter = () => {
+          const chars = input.value.length;
+          const words = input.value.trim() ? input.value.trim().split(/\s+/).length : 0;
+          counter.innerHTML = `<span>${chars} chars</span><span>${words} words</span>`;
+          wrap.dataset.mode = input.value === item.defaultValue ? 'default' : 'custom';
+        };
+
+        input.addEventListener('input', () => {
+          syncCounter();
+          updateStats();
+          updateChangeFeed();
+          maybeAutosave('Autosaved text changes.');
+        });
+
+        wrap.appendChild(input);
+        wrap.appendChild(counter);
+        textFields.appendChild(wrap);
+        syncCounter();
+      });
+    };
+
+    const renderImageFields = () => {
+      imageConfig.forEach((item) => {
+        const state = imageState[item.key] || {};
+        const card = document.createElement('div');
+        card.className = 'media-card media-item';
+        card.dataset.key = item.key;
+        card.dataset.label = item.label.toLowerCase();
+
+        const previewSrc = state.src || item.defaultSrc;
+        card.innerHTML = `
+          <img src="${previewSrc}" alt="${item.label}">
+          <div class="media-meta">
+            <h3>${item.label}</h3>
+            <p class="media-path">${state.src ? 'Custom image saved in browser storage' : item.defaultSrc}</p>
+            <div class="media-actions">
+              <label class="file-button" for="file-${item.key}">Replace Image</label>
+              <input id="file-${item.key}" type="file" accept="image/*">
+              <button type="button" data-restore-image="${item.key}">Restore Default</button>
+            </div>
+            <label class="toggle" style="margin-top:12px">
+              <div>
+                <strong>Hide this image</strong>
+                <small>Turns off the related image block on the live site.</small>
+              </div>
+              <input type="checkbox" data-hide-image="${item.key}" ${state.deleted ? 'checked' : ''}>
+            </label>
+          </div>
+        `;
+
+        const fileInput = card.querySelector(`#file-${item.key}`);
+        const preview = card.querySelector('img');
+        const path = card.querySelector('.media-path');
+        const hideToggle = card.querySelector(`[data-hide-image="${item.key}"]`);
+
+        const syncMode = () => {
+          const current = imageState[item.key] || {};
+          const mode = current.deleted ? 'hidden' : current.src ? 'custom' : 'default';
+          card.dataset.mode = mode;
+        };
+
+        fileInput.addEventListener('change', (event) => {
+          const file = event.target.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = () => {
+            imageState[item.key] = { ...(imageState[item.key] || {}), src: reader.result, deleted: false };
+            preview.src = reader.result;
+            path.textContent = 'Custom image saved in browser storage';
+            hideToggle.checked = false;
+            syncMode();
+            updateStats();
+            updateChangeFeed();
+            maybeAutosave('Autosaved media changes.');
+          };
+          reader.readAsDataURL(file);
+        });
+
+        hideToggle.addEventListener('change', () => {
+          const next = imageState[item.key] || {};
+          next.src = next.src || '';
+          next.deleted = hideToggle.checked;
+          imageState[item.key] = next;
+          syncMode();
+          updateStats();
+          updateChangeFeed();
+          maybeAutosave('Autosaved media visibility changes.');
+        });
+
+        imageFields.appendChild(card);
+        syncMode();
+      });
+    };
+
+    const applyThemeToInputs = (theme) => {
+      document.getElementById('themePreset').value = theme.preset || 'noir-gold';
+      document.getElementById('colorGold').value = theme.gold || defaultThemeSettings.gold;
+      document.getElementById('colorDark').value = theme.dark || defaultThemeSettings.dark;
+      document.getElementById('colorCream').value = theme.cream || defaultThemeSettings.cream;
+      document.getElementById('reduceMotion').checked = !!theme.reduceMotion;
+      document.getElementById('hideParticles').checked = !!theme.hideParticles;
+      document.getElementById('hideCursor').checked = !!theme.hideCursor;
+    };
+
+    const applyThemePreset = (presetKey) => {
+      const preset = themePresets[presetKey];
+      if (!preset) return;
+      document.getElementById('themePreset').value = presetKey;
+      document.getElementById('colorGold').value = preset.gold;
+      document.getElementById('colorDark').value = preset.dark;
+      document.getElementById('colorCream').value = preset.cream;
+      updateChangeFeed();
+      updateStats();
+      maybeAutosave('Autosaved theme changes.');
+    };
+
+    const filterCollection = (selector, searchValue, filterValue) => {
+      document.querySelectorAll(selector).forEach((item) => {
+        const label = `${item.dataset.label || ''} ${item.dataset.key || ''}`;
+        const matchesSearch = !searchValue || label.includes(searchValue);
+        const mode = item.dataset.mode || 'default';
+        const matchesFilter =
+          filterValue === 'all' ||
+          (filterValue === 'custom' && mode === 'custom') ||
+          (filterValue === 'default' && mode === 'default') ||
+          (filterValue === 'hidden' && mode === 'hidden');
+        item.classList.toggle('hidden-item', !(matchesSearch && matchesFilter));
+      });
+    };
+
+    const refreshPreview = () => {
+      sitePreview.src = `percy_denolo_v3.html?ts=${Date.now()}`;
+    };
+
+    renderTextFields();
+    renderImageFields();
+    applyThemeToInputs(data.site || defaultThemeSettings);
+
+    document.querySelectorAll('[data-restore-text]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const key = button.dataset.restoreText;
+        const config = textConfig.find((item) => item.key === key);
+        const input = document.getElementById(key);
+        if (!config || !input) return;
+        input.value = config.defaultValue;
+        input.dispatchEvent(new Event('input'));
+      });
+    });
+
+    document.querySelectorAll('[data-restore-image]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const key = button.dataset.restoreImage;
+        const config = imageConfig.find((item) => item.key === key);
+        const card = button.closest('.media-card');
+        if (!config || !card) return;
+        delete imageState[key];
+        card.querySelector('img').src = config.defaultSrc;
+        card.querySelector('.media-path').textContent = config.defaultSrc;
+        card.querySelector(`[data-hide-image="${key}"]`).checked = false;
+        const fileInput = card.querySelector(`#file-${key}`);
+        if (fileInput) fileInput.value = '';
+        card.dataset.mode = 'default';
+        updateStats();
+        updateChangeFeed();
+        maybeAutosave('Autosaved restored image.');
+      });
+    });
+
+    document.querySelectorAll('.nav-btn').forEach((button) => {
+      button.addEventListener('click', () => {
+        document.querySelectorAll('.nav-btn').forEach((item) => item.classList.remove('active'));
+        button.classList.add('active');
+        const panel = button.dataset.panel;
+        document.querySelectorAll('.panel').forEach((item) => item.hidden = true);
+        document.getElementById(`panel-${panel}`).hidden = false;
+      });
+    });
+
+    document.querySelectorAll('[data-preset]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const bundle = presetBundles[button.dataset.preset];
+        if (!bundle) return;
+        Object.entries(bundle.texts || {}).forEach(([key, value]) => {
+          const input = document.getElementById(key);
+          if (input) {
+            input.value = value;
+            input.dispatchEvent(new Event('input'));
+          }
+        });
+        setStatus(`Preset "${button.dataset.preset}" applied.`);
+      });
+    });
+
+    autosaveToggle.checked = !!uiPrefs.autosave;
+    autosaveLabel.textContent = autosaveToggle.checked ? 'Autosave is on' : 'Manual save mode';
+    autosaveToggle.addEventListener('change', () => {
+      uiPrefs.autosave = autosaveToggle.checked;
+      autosaveLabel.textContent = autosaveToggle.checked ? 'Autosave is on' : 'Manual save mode';
+      saveUiPrefs(uiPrefs);
+      setStatus(autosaveToggle.checked ? 'Autosave enabled.' : 'Autosave disabled.');
+    });
+
+    document.getElementById('contentSearch').addEventListener('input', (event) => {
+      filterCollection('.text-item', event.target.value.trim().toLowerCase(), document.getElementById('contentFilter').value);
+    });
+    document.getElementById('contentFilter').addEventListener('change', (event) => {
+      filterCollection('.text-item', document.getElementById('contentSearch').value.trim().toLowerCase(), event.target.value);
+    });
+    document.getElementById('mediaSearch').addEventListener('input', (event) => {
+      filterCollection('.media-item', event.target.value.trim().toLowerCase(), document.getElementById('mediaFilter').value);
+    });
+    document.getElementById('mediaFilter').addEventListener('change', (event) => {
+      filterCollection('.media-item', document.getElementById('mediaSearch').value.trim().toLowerCase(), event.target.value);
+    });
+
+    document.getElementById('saveBtn').addEventListener('click', () => {
+      saveAll('Saved. Refresh or reopen the website to view the updated content.');
+    });
+
+    document.getElementById('openSiteBtn').addEventListener('click', () => {
+      window.open('percy_denolo_v3.html', '_blank');
+    });
+
+    document.getElementById('refreshPreviewBtn').addEventListener('click', () => {
+      refreshPreview();
+      setStatus('Preview refreshed.');
+    });
+    document.getElementById('reloadFrameBtn').addEventListener('click', refreshPreview);
+    document.getElementById('focusPreviewBtn').addEventListener('click', () => {
+      document.querySelector('[data-panel="preview"]').click();
+      document.getElementById('panel-preview').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+    document.getElementById('applyPresetThemeBtn').addEventListener('click', () => {
+      applyThemePreset('noir-gold');
+      setStatus('Noir Gold theme applied to controls.');
+    });
+    document.getElementById('applyThemePresetBtn').addEventListener('click', () => {
+      applyThemePreset(document.getElementById('themePreset').value);
+      setStatus('Theme palette applied.');
+    });
+    document.getElementById('restoreThemeBtn').addEventListener('click', () => {
+      applyThemeToInputs(defaultThemeSettings);
+      updateStats();
+      updateChangeFeed();
+      maybeAutosave('Autosaved theme reset.');
+      setStatus('Theme settings restored to defaults.');
+    });
+
+    ['themePreset','colorGold','colorDark','colorCream','reduceMotion','hideParticles','hideCursor'].forEach((id) => {
+      document.getElementById(id).addEventListener('input', () => {
+        updateStats();
+        updateChangeFeed();
+        maybeAutosave('Autosaved theme settings.');
+      });
+      document.getElementById(id).addEventListener('change', () => {
+        updateStats();
+        updateChangeFeed();
+        maybeAutosave('Autosaved theme settings.');
+      });
+    });
+
+    document.getElementById('exportBtn').addEventListener('click', () => {
+      const payload = buildPayload();
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'percy-admin-settings.json';
+      link.click();
+      URL.revokeObjectURL(url);
+      setStatus('Settings exported.');
+    });
+
+    document.getElementById('importInput').addEventListener('change', (event) => {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const imported = JSON.parse(reader.result);
+          saveData({
+            texts: imported.texts || {},
+            images: imported.images || {},
+            site: { ...defaultThemeSettings, ...(imported.site || {}) }
+          });
+          location.reload();
+        } catch (err) {
+          setStatus('Import failed. The JSON file is not valid.');
+        }
+      };
+      reader.readAsText(file);
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      localStorage.removeItem(STORAGE_KEY);
+      location.reload();
+    });
+
+    updateStats();
+    updateChangeFeed();
+    filterCollection('.text-item', '', 'all');
+    filterCollection('.media-item', '', 'all');
+  </script>
+</body>
+</html>
